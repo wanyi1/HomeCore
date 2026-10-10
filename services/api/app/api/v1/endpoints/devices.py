@@ -20,8 +20,10 @@ from app.services.device_service import (
     format_device_response,
     seed_demo_environment,
 )
+from app.services.iot_engine import iot_engine
 
 router = APIRouter(prefix="/devices", tags=["设备中心"])
+
 
 @router.get("", response_model=list[DeviceResponse])
 def get_devices(
@@ -106,7 +108,7 @@ def remove_device(
     return {"message": "设备移除成功"}
 
 @router.post("/{device_id}/control", response_model=DeviceResponse)
-def execute_control(
+async def execute_control(
     device_id: str,
     control_in: DeviceControlRequest,
     request: Request,
@@ -114,14 +116,17 @@ def execute_control(
     current_user: User = Depends(get_current_user),
 ):
     client_ip = request.client.host if request.client else "127.0.0.1"
-    return control_device(
+    res = await iot_engine.execute_control(
         db=db,
         device_id=device_id,
-        control_in=control_in,
+        command=control_in.command,
+        params=control_in.params,
         user_id=current_user.id,
         username=current_user.username,
         ip=client_ip,
     )
+    return res["device"]
+
 
 @router.post("/seed-demo")
 def seed_demo(

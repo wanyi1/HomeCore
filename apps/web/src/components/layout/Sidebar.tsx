@@ -21,6 +21,7 @@ export type NavItemKey =
   | 'overview'
   | 'devices'
   | 'rooms'
+  | 'integrations'
   | 'automation'
   | 'network'
   | 'monitoring'
@@ -55,8 +56,10 @@ const NAV_SECTIONS: NavSection[] = [
       { key: 'overview', label: '家庭总览', icon: Home, isReady: true },
       { key: 'devices', label: '智能家居', icon: Cpu, isReady: true },
       { key: 'rooms', label: '空间管理', icon: Grid, isReady: true },
+      { key: 'integrations', label: '物联网接入', icon: Radio, isReady: true },
     ],
   },
+
   {
     title: '场景与网络感知',
     items: [

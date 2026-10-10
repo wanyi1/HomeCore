@@ -8,7 +8,9 @@ from sqlalchemy.orm import sessionmaker
 
 # Setup path
 root_dir = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(root_dir))
 sys.path.insert(0, str(root_dir / "services" / "api"))
+
 
 # Use dedicated test sqlite database
 test_db_file = root_dir / "test_homecore.db"

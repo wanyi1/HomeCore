@@ -21,6 +21,9 @@ def format_device_response(device: Device) -> DeviceResponse:
         name=device.name,
         identifier=device.identifier,
         source=device.source,
+        source_connection_id=device.source_connection_id,
+        external_id=device.external_id,
+        last_error=device.last_error,
         protocol=device.protocol,
         device_type=device.device_type,
         room_id=device.room_id,
@@ -34,6 +37,7 @@ def format_device_response(device: Device) -> DeviceResponse:
         created_at=device.created_at,
         updated_at=device.updated_at,
     )
+
 
 def list_devices(
     db: Session,

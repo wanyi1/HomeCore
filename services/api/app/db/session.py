@@ -38,6 +38,9 @@ def init_db():
     # Import all models to ensure they are registered with Base.metadata
     from app.models.user import User  # noqa
     from app.models.room import Room  # noqa
+    from app.models.integration import IntegrationConfig  # noqa
     from app.models.device import Device, DeviceState  # noqa
     from app.models.audit import AuditLog, EventLog  # noqa
-    Base.metadata.create_all(bind=engine)
+    from app.db.migrations import run_migrations
+    run_migrations()
+

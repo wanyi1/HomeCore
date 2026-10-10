@@ -104,12 +104,21 @@ export const DeviceCard: React.FC<DeviceCardProps> = ({
           : 'bg-[#131C31] hover:bg-[#16223B] border-[#1E2D4A] hover:border-slate-600 shadow-card'
       }`}
     >
-      {/* Demo / Offline ribbon corner tag */}
-      {isDemo && (
+      {/* Demo / Source ribbon corner tag */}
+      {isDemo ? (
         <div className="absolute top-0 right-0 bg-gradient-to-l from-purple-600 to-indigo-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-bl-lg tracking-wider uppercase shadow-sm">
-          演示模拟
+          演示沙箱
         </div>
-      )}
+      ) : device.source === 'homeassistant' ? (
+        <div className="absolute top-0 right-0 bg-gradient-to-l from-blue-600 to-cyan-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-bl-lg tracking-wider uppercase shadow-sm">
+          Home Assistant
+        </div>
+      ) : device.source === 'mqtt' ? (
+        <div className="absolute top-0 right-0 bg-gradient-to-l from-indigo-600 to-teal-600 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-bl-lg tracking-wider uppercase shadow-sm">
+          MQTT 物理
+        </div>
+      ) : null}
+
 
       <div>
         {/* Top bar: Icon, Name, Room, Actions */}

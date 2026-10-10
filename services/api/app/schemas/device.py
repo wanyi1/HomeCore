@@ -39,8 +39,12 @@ class DeviceResponse(DeviceBase):
 
     id: str
     status: str  # online, offline, error, unknown
+    source_connection_id: Optional[str] = None
+    external_id: Optional[str] = None
+    last_error: Optional[str] = None
     room_name: Optional[str] = None
     last_seen: Optional[datetime] = None
     state: Optional[DeviceStateResponse] = None
     created_at: datetime
     updated_at: datetime
+

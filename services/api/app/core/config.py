@@ -2,7 +2,11 @@ import os
 from pathlib import Path
 from pydantic import BaseModel
 
+import sys
 BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent.parent
+if str(BASE_DIR) not in sys.path:
+    sys.path.insert(0, str(BASE_DIR))
+
 
 class Settings(BaseModel):
     PROJECT_NAME: str = "HomeCore"

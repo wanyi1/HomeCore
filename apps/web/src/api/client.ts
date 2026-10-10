@@ -130,4 +130,51 @@ export const api = {
     audit: (limit = 50) => apiFetch<AuditLog[]>(`/api/v1/audit/logs?limit=${limit}`),
     events: (limit = 50) => apiFetch<EventLog[]>(`/api/v1/events?limit=${limit}`),
   },
+  integrations: {
+    list: () => apiFetch<any[]>('/api/v1/integrations'),
+    get: (id: string) => apiFetch<any>(`/api/v1/integrations/${id}`),
+    create: (data: { integration_type: string; name: string; config: Record<string, any>; is_enabled?: boolean }) =>
+      apiFetch<any>('/api/v1/integrations', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    update: (id: string, data: { name?: string; config?: Record<string, any>; is_enabled?: boolean }) =>
+      apiFetch<any>(`/api/v1/integrations/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    delete: (id: string) =>
+      apiFetch<{ message: string }>(`/api/v1/integrations/${id}`, {
+        method: 'DELETE',
+      }),
+    testAdhoc: (data: { integration_type: string; config: Record<string, any> }) =>
+      apiFetch<any>('/api/v1/integrations/test', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    testSaved: (id: string) =>
+      apiFetch<any>(`/api/v1/integrations/${id}/test`, {
+        method: 'POST',
+      }),
+    discover: (id: string) =>
+      apiFetch<any[]>(`/api/v1/integrations/${id}/discover`),
+    import: (id: string, entities: any[]) =>
+      apiFetch<{ message: string; results: any[] }>(`/api/v1/integrations/${id}/import`, {
+        method: 'POST',
+        body: JSON.stringify({ entities }),
+      }),
+  },
+  voice: {
+    query: (query: string, space_id?: string) =>
+      apiFetch<any>('/api/v1/voice/query', {
+        method: 'POST',
+        body: JSON.stringify({ query, space_id }),
+      }),
+    command: (intent: string, target_name: string, room_name?: string, params: Record<string, any> = {}) =>
+      apiFetch<any>('/api/v1/voice/command', {
+        method: 'POST',
+        body: JSON.stringify({ intent, target_name, room_name, params }),
+      }),
+  },
 };
+

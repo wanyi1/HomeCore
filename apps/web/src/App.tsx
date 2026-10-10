@@ -8,6 +8,7 @@ import { Login } from './pages/Login';
 import { Overview } from './pages/Overview';
 import { Devices } from './pages/Devices';
 import { Rooms } from './pages/Rooms';
+import { Integrations } from './pages/Integrations';
 import { Settings } from './pages/Settings';
 import { PlaceholderPage } from './pages/PlaceholderPage';
 
@@ -33,15 +34,18 @@ const MainLayout: React.FC = () => {
       case 'overview':
         return <Overview onNavigate={setCurrentTab} />;
       case 'devices':
-        return <Devices />;
+        return <Devices onNavigate={setCurrentTab} />;
       case 'rooms':
         return <Rooms />;
+      case 'integrations':
+        return <Integrations onNavigate={setCurrentTab} />;
       case 'settings':
         return <Settings />;
       default:
         return <PlaceholderPage tabKey={currentTab} onNavigate={setCurrentTab} />;
     }
   };
+
 
   return (
     <div className="flex h-screen bg-[#0A0F1D] text-[#F8FAFC] overflow-hidden relative">

@@ -35,3 +35,38 @@ def decode_access_token(token: str) -> Optional[dict]:
         return payload
     except jwt.PyJWTError:
         return None
+
+# ==================== 凭证安全加密与脱敏 ====================
+import base64
+import hashlib
+from cryptography.fernet import Fernet
+
+def _get_fernet() -> Fernet:
+    key = base64.urlsafe_b64encode(hashlib.sha256(settings.SECRET_KEY.encode("utf-8")).digest())
+    return Fernet(key)
+
+def encrypt_credential(plain_text: str) -> str:
+    """加密敏感凭据（如 Home Assistant 长期访问令牌、MQTT 密码），防落库明文泄露"""
+    if not plain_text:
+        return ""
+    fernet = _get_fernet()
+    return fernet.encrypt(plain_text.encode("utf-8")).decode("utf-8")
+
+def decrypt_credential(cipher_text: str) -> str:
+    """解密敏感凭据"""
+    if not cipher_text:
+        return ""
+    try:
+        fernet = _get_fernet()
+        return fernet.decrypt(cipher_text.encode("utf-8")).decode("utf-8")
+    except Exception:
+        return ""
+
+def mask_credential(text: str) -> str:
+    """返回掩码脱敏凭证供前端安全展示，绝不泄漏明文"""
+    if not text:
+        return ""
+    if len(text) <= 8:
+        return "********"
+    return f"{text[:4]}...{text[-4:]}"
+

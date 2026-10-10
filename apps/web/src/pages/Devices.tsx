@@ -21,11 +21,17 @@ import {
   Filter,
   AlertTriangle,
   FolderPlus,
+  Radio,
 } from 'lucide-react';
+
 
 type ViewMode = 'grouped' | 'grid' | 'list';
 
-export const Devices: React.FC = () => {
+interface DevicesProps {
+  onNavigate?: (tab: any) => void;
+}
+
+export const Devices: React.FC<DevicesProps> = ({ onNavigate }) => {
   const { success, error: toastError, warning } = useToast();
   const [devices, setDevices] = useState<Device[]>([]);
   const [rooms, setRooms] = useState<Room[]>([]);
@@ -39,8 +45,10 @@ export const Devices: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<string>('');
   const [selectedStatus, setSelectedStatus] = useState<string>('');
   const [demoFilter, setDemoFilter] = useState<string>('all'); // all, demo, real
+  const [sourceFilter, setSourceFilter] = useState<string>('all'); // all, homeassistant, mqtt, simulator, manual
   const [selectedType, setSelectedType] = useState<string>('');
   const [keyword, setKeyword] = useState<string>('');
+
 
   // Modals & Drawers
   const [isConnectWizardOpen, setIsConnectWizardOpen] = useState(false);
@@ -125,13 +133,23 @@ export const Devices: React.FC = () => {
     }
   };
 
+  const filteredDevices = useMemo(() => {
+    return devices.filter((d) => {
+      if (sourceFilter === 'homeassistant' && d.source !== 'homeassistant') return false;
+      if (sourceFilter === 'mqtt' && d.source !== 'mqtt') return false;
+      if (sourceFilter === 'demo' && !d.is_demo) return false;
+      if (sourceFilter === 'manual' && d.source !== 'manual') return false;
+      return true;
+    });
+  }, [devices, sourceFilter]);
+
   // Group devices by room for 'grouped' view
   const groupedDevices = useMemo(() => {
     const groups: { roomId: string; roomName: string; area: string; devices: Device[] }[] = [];
 
     // Group assigned rooms
     rooms.forEach((r) => {
-      const devsInRoom = devices.filter((d) => d.room_id === r.id);
+      const devsInRoom = filteredDevices.filter((d) => d.room_id === r.id);
       if (devsInRoom.length > 0 || selectedRoom === r.id) {
         groups.push({
           roomId: r.id,
@@ -143,7 +161,7 @@ export const Devices: React.FC = () => {
     });
 
     // Unassigned room
-    const unassigned = devices.filter((d) => !d.room_id);
+    const unassigned = filteredDevices.filter((d) => !d.room_id);
     if (unassigned.length > 0 && (!selectedRoom || selectedRoom === 'unassigned')) {
       groups.push({
         roomId: 'unassigned',
@@ -154,7 +172,8 @@ export const Devices: React.FC = () => {
     }
 
     return groups;
-  }, [rooms, devices, selectedRoom]);
+  }, [rooms, filteredDevices, selectedRoom]);
+
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -216,6 +235,17 @@ export const Devices: React.FC = () => {
             <span>接入新设备</span>
           </button>
 
+          {/* IoT Integration Jump */}
+          {onNavigate && (
+            <button
+              onClick={() => onNavigate('integrations')}
+              className="px-3.5 py-2 rounded-btn bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm active:scale-95"
+            >
+              <Radio className="w-3.5 h-3.5" />
+              <span>物联网接入 (HA/MQTT)</span>
+            </button>
+          )}
+
           {/* Refresh button */}
           <button
             onClick={fetchDevices}
@@ -228,7 +258,7 @@ export const Devices: React.FC = () => {
       </div>
 
       {/* 2. Search & Filters Bar */}
-      <div className="p-4 rounded-card bg-[#131C31] border border-[#1E2D4A] shadow-card grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+      <div className="p-4 rounded-card bg-[#131C31] border border-[#1E2D4A] shadow-card grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2.5 text-xs">
         {/* Search */}
         <div className="relative">
           <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
@@ -282,14 +312,27 @@ export const Devices: React.FC = () => {
           <option value="offline">仅看未连接/离线</option>
         </select>
 
+        {/* Protocol Source Filter */}
+        <select
+          value={sourceFilter}
+          onChange={(e) => setSourceFilter(e.target.value)}
+          className="bg-[#0A0F1D] border border-[#1E2D4A] rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500"
+        >
+          <option value="all">全部接入协议</option>
+          <option value="homeassistant">Home Assistant</option>
+          <option value="mqtt">MQTT 协议</option>
+          <option value="demo">演示模拟沙箱</option>
+          <option value="manual">手动录入设备</option>
+        </select>
+
         {/* Demo Filter */}
         <select
           value={demoFilter}
           onChange={(e) => setDemoFilter(e.target.value)}
           className="bg-[#0A0F1D] border border-[#1E2D4A] rounded-lg px-3 py-2 text-slate-200 focus:outline-none focus:border-blue-500"
         >
-          <option value="all">全量设备 (物理+沙箱)</option>
-          <option value="demo">仅演示模拟沙箱</option>
+          <option value="all">全量 (物理+沙箱)</option>
+          <option value="demo">仅演示沙箱</option>
           <option value="real">仅物理真实硬件</option>
         </select>
       </div>
@@ -302,7 +345,7 @@ export const Devices: React.FC = () => {
           <AlertTriangle className="w-8 h-8 text-rose-400 mx-auto mb-2" />
           <p className="text-sm text-rose-300">{error}</p>
         </div>
-      ) : devices.length === 0 ? (
+      ) : filteredDevices.length === 0 ? (
         <EmptyState
           icon={Cpu}
           title="未检索到匹配的智能硬件"
@@ -315,7 +358,7 @@ export const Devices: React.FC = () => {
       ) : viewMode === 'list' ? (
         /* High-density Table View */
         <DeviceListView
-          devices={devices}
+          devices={filteredDevices}
           onControl={handleControl}
           onOpenDetail={(d) => setDetailDevice(d)}
           onDelete={handleDeleteDevice}
@@ -361,7 +404,7 @@ export const Devices: React.FC = () => {
       ) : (
         /* Global Grid View */
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {devices.map((device) => (
+          {filteredDevices.map((device) => (
             <DeviceCard
               key={device.id}
               device={device}
@@ -372,6 +415,7 @@ export const Devices: React.FC = () => {
           ))}
         </div>
       )}
+
 
       {/* 4. Detail Slide-over Drawer */}
       <DeviceDetailDrawer

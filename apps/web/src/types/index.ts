@@ -38,12 +38,53 @@ export interface Device {
   capabilities: string[];
   status: 'online' | 'offline' | 'error' | 'unknown';
   is_demo: boolean;
+  source_connection_id?: string | null;
+  external_id?: string | null;
+  last_error?: string | null;
   last_seen: string | null;
   state?: DeviceState | null;
   extra_meta: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
+
+export interface IntegrationConfig {
+  id: string;
+  integration_type: 'homeassistant' | 'mqtt';
+  name: string;
+  config: Record<string, any>;
+  status: 'connected' | 'disconnected' | 'error' | 'unconfigured';
+  is_enabled: boolean;
+  last_connected_at: string | null;
+  last_error: string | null;
+  device_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DiscoveredEntity {
+  external_id: string;
+  name: string;
+  device_type: string;
+  capabilities: string[];
+  current_state: string;
+  attributes: Record<string, any>;
+  is_available: boolean;
+  source_protocol: string;
+  already_imported: boolean;
+  suggested_room_id?: string | null;
+}
+
+export interface IntegrationTestResult {
+  success: boolean;
+  version?: string;
+  location_name?: string;
+  entity_count?: number;
+  latency_ms?: number;
+  message?: string;
+  error?: string;
+}
+
 
 export interface EventLog {
   id: string;

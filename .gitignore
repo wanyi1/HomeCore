@@ -43,6 +43,8 @@ dist-ssr/
 *.db-shm
 *.sqlite3
 *.log
+*.bak
+
 
 # IDE & OS
 .vscode/

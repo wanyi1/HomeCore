@@ -2,6 +2,40 @@
 
 所有关键架构变动、功能发布和测试验收记录均在此维护。
 
+## [0.3.0] - 2026-10-10
+### Added (真实设备接入与家庭物联网核心开发)
+- **统一物联网管理引擎 (IoTEngine & BaseDeviceAdapter)**：
+  - 架构分层：确立独立的协议适配器基类 `BaseDeviceAdapter`，定义生命周期管理、实体扫描、指令下发与异步状态通知规范。
+  - 适配器生命周期：支持 Home Assistant 与 MQTT 适配器的随应用优雅启停、心跳保活与自动重连。
+  - 真实物理与演示沙箱严格物理隔离：`is_demo` 设备走本地内存状态机，绝不污染真实外网连接；真实设备严格秉持状态诚实原则，离线物理设备严禁伪造控制成功。
+  - 实体发现与智能去重导入：批量导入外部扫描实体并支持直接绑定空间，自动识别已入库实体执行增量更新，杜绝重复冗余数据。
+- **Home Assistant 真实接入 (HomeAssistantAdapter)**：
+  - REST API 交互：实现实例配置获取、版本诊断、延迟测算与全量实体扫描；支持 `light`, `switch`, `climate`, `sensor`, `binary_sensor` 领域自动映射与能力推导。
+  - WebSocket 双工事件流：实现 `auth_required` -> `auth` -> `auth_ok` 握手鉴权流，订阅 `state_changed` 实时事件，实现物理设备状态毫秒级无感知同步。
+  - 心跳保活与断线重连：内置 30 秒 ping/pong 保活与指数退避（2s~30s）断线自动重连守护。
+  - 严谨服务调用确认：通过 `api/services` 下发控制并校验返回，进一步抓取实体状态验证，区分 `command_sent`, `device_acknowledged`, `state_updated` 状态。
+- **MQTT 真实物联网接入 (MQTTAdapter)**：
+  - 客户端生命周期管理：基于 `paho-mqtt` 2.x 构建客户端，支持标准 TCP 及 TLS 安全加密通道。
+  - 安全主题白名单机制：严格禁止默认全局通配符 `#` 订阅；针对已登记设备进行精准白名单订阅（`state`, `telemetry`, `availability`）。
+  - 报文解析与校验：全面支持 JSON 结构化载荷解析与纯文本开关状态兼容器；安全校验 Topic 正则，拦截非法字符注入。
+  - 设备确认机制与 QoS 保障：支持 QoS 1 投递与等待状态确认回执 Future 机制。
+- **凭证安全托管与脱敏**：
+  - 后端采用 Python `cryptography` Fernet 对称加密将长期访问令牌与 MQTT 密码加密存储于 `integration_configs` 表。
+  - 前端回传时全部执行掩码脱敏（形如 `eyJh...****`），绝不泄漏明文。
+- **HomeCore Voice 语音中枢网关架构预留**：
+  - 预留 `/api/v1/voice/query` 自然语言全屋设备状态查询接口。
+  - 预留 `/api/v1/voice/command` 统一语音控制意图匹配与执行通道。
+- **前端物联网接入中枢 (Integrations.tsx & DiscoverEntitiesModal.tsx)**：
+  - 专设“物联网接入”全功能控制台，直观提供 HA 与 MQTT 双面板配置、一键连通性测试与延迟指标显示。
+  - 实体扫描与批量导入弹窗：支持类型图标展示、在线状态徽章、空间快速归属选择与一键导入。
+  - 快捷登记 MQTT 设备面板：快速配置 Topic 映射与房间绑定。
+  - 智能家居（Devices.tsx）增强：增加协议来源多重筛选器，卡片展示来源专属角标。
+- **可追踪数据库安全迁移**：
+  - 编写 `migrations.py`，增量引入 `integration_configs` 表与 `devices` 新增扩展字段（`source_connection_id`, `external_id`, `last_error`），平滑迁移不丢失任何现有用户数据。
+- **自动化测试全覆盖**：
+  - 新增凭证加解密单元测试（`test_fernet_crypto.py`）、适配器协议层模拟测试（`test_iot_adapters.py`）及 API 集成测试（`test_iot_integrations_api.py`）。
+  - 覆盖测试扩展至 23 项，通过率 100%；Windows 启动器五大场景回归测试 100% 通过。
+
 ## [0.2.0] - 2026-10-10
 ### Added (全能家庭智能中枢 UI/UX 全局重构)
 - **现代深色赛博居家设计系统 (Cyber-Domestic Design System)**：

@@ -19,7 +19,9 @@ const TAB_TITLES: Record<NavItemKey, { title: string; subtitle: string }> = {
   overview: { title: '家庭数字驾驶舱', subtitle: '实时总览全屋状态、快捷场景切换与环境流' },
   devices: { title: '智能家居控制中心', subtitle: '房间聚合分组、设备卡片控制与元数据管理' },
   rooms: { title: '家庭空间管理', subtitle: '楼层区域组织、空间卡片与二维户型预留' },
+  integrations: { title: '物联网协议接入中枢', subtitle: 'Home Assistant 与 MQTT 真实物理链路、实体发现与双工监听' },
   automation: { title: '自动化与场景编排', subtitle: '事件触发、条件过滤与规则引擎 (阶段2接入)' },
+
   network: { title: '家庭网络拓扑', subtitle: '受控子网扫描与真实链路拓扑 (阶段3接入)' },
   monitoring: { title: '系统监控与主机健康', subtitle: '主力PC性能指标与探针 (阶段3接入)' },
   energy: { title: '环境能耗统计', subtitle: '真实物理计量与时序趋势 (阶段3接入)' },
