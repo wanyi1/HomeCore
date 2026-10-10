@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import { Sidebar, NavItemKey } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import { Loading } from './components/common/Loading';
@@ -16,8 +17,9 @@ const MainLayout: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0B1020] flex items-center justify-center">
-        <Loading message="正在连接 HomeCore 本地数字中枢..." className="h-64" />
+      <div className="min-h-screen bg-[#0A0F1D] flex items-center justify-center relative overflow-hidden">
+        <div className="ambient-glow-top" />
+        <Loading message="正在唤醒 HomeCore 本地家庭智能中枢..." className="h-64" />
       </div>
     );
   }
@@ -42,12 +44,16 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-[#0B1020] text-[#F8FAFC] overflow-hidden">
+    <div className="flex h-screen bg-[#0A0F1D] text-[#F8FAFC] overflow-hidden relative">
+      {/* Ambient decorative lighting */}
+      <div className="ambient-glow-top" />
+      <div className="ambient-glow-bottom" />
+
       {/* 240px Desktop Sidebar */}
       <Sidebar currentTab={currentTab} onSelectTab={setCurrentTab} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
         <Header currentTab={currentTab} />
         <main className="flex-1 overflow-y-auto">
           {renderContent()}
@@ -60,7 +66,9 @@ const MainLayout: React.FC = () => {
 export function App() {
   return (
     <AuthProvider>
-      <MainLayout />
+      <ToastProvider>
+        <MainLayout />
+      </ToastProvider>
     </AuthProvider>
   );
 }

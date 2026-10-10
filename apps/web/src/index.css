@@ -4,27 +4,91 @@
 
 @layer base {
   body {
-    background-color: #0B1020;
+    background-color: #0A0F1D;
     color: #F8FAFC;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    overflow-x: hidden;
   }
 }
 
-/* Custom modern scrollbar for dark mode */
+/* Custom smooth dark scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B1020;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1E293B;
-  border-radius: 3px;
+  background: #1E2D4A;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #2C3E64;
+}
+
+/* Glassmorphism surfaces */
+.glass-panel {
+  background: rgba(19, 28, 49, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(25, 36, 62, 0.7) 0%, rgba(19, 28, 49, 0.85) 100%);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-card-hover {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(59, 130, 246, 0.35);
+  box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.6), 0 0 20px -6px rgba(59, 130, 246, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Ambient subtle background glow */
+.ambient-glow-top {
+  position: fixed;
+  top: -150px;
+  right: -100px;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.03) 50%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ambient-glow-bottom {
+  position: fixed;
+  bottom: -200px;
+  left: -150px;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.06) 0%, rgba(59, 130, 246, 0.02) 50%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Pulse beacon animation */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
+}
+
+.pulse-beacon {
+  animation: pulseGlow 2.5s infinite ease-in-out;
 }

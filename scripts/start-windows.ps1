@@ -113,13 +113,8 @@ if (-not (Test-Path $WebNodeModules)) {
 # 3. 端口探测与服务复用判断函数
 function Get-PortListener {
     param([int]$Port)
-    $conns = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
-    if ($conns) {
-        $listenConn = $conns | Where-Object { $_.State -eq 'Listen' } | Select-Object -First 1
-        if ($listenConn) { return $listenConn }
-        return $conns | Select-Object -First 1
-    }
-    return $null
+    $listenConn = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1
+    return $listenConn
 }
 
 function Test-BackendHealth {
